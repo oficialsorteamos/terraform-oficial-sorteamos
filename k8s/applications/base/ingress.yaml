@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sorteamos-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: 20m
+spec:
+  tls:
+  - hosts:
+    - main.apps.sorteamos.online
+    secretName: sorteamos-certs
+  rules:
+  - host: "main.apps.sorteamos.online"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: sorteamos-service
+            port:
+              number: 80

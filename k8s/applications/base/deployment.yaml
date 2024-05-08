@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sorteamos
+  labels:
+    app: sorteamos
+spec:
+  selector:
+    matchLabels:
+      app: sorteamos
+  template:
+    metadata:
+      labels:
+        app: sorteamos
+    spec:
+      containers:
+        - name: sorteamos
+          image: registry.digitalocean.com/sorteamos/sorteamos:latest
+          resources:
+            limits:
+              cpu: 1
+              memory: "3072Mi"
+          ports:
+            - containerPort: 80
+            - containerPort: 6001
+            - containerPort: 8358
+              protocol: TCP
+            - containerPort: 10000
+              protocol: UDP
+            - containerPort: 20000
+              protocol: UDP
+          envFrom:
+          - configMapRef:
+              name: sorteamos-config-map
+          - secretRef:
+              name: sorteamos-secret
+          imagePullPolicy: Always

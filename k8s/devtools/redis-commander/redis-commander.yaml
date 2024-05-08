@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: devtools
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-commander-config-map
+  namespace: devtools
+data:
+  REDIS_TLS: "true"
+  REDIS_HOST: "private-sorteamos-cache-do-user-10912519-0.b.db.ondigitalocean.com"
+  REDIS_PORT: "25061"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-commander
+  namespace: devtools
+  labels:
+    app: redis-commander
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-commander
+  template:
+    metadata:
+      labels:
+        app: redis-commander
+    spec:
+      containers:
+      - image: rediscommander/redis-commander
+        name: redis-commander
+        ports:
+        - containerPort: 8081
+        envFrom:
+          - configMapRef:
+              name: redis-commander-config-map
+          - secretRef:
+              name: redis-commander-secret
+        imagePullPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-commander-service
+  namespace: devtools
+spec:
+  selector:
+    app: redis-commander
+  ports:
+    - name: http
+      port: 8081
+      targetPort: 8081
+  type: ClusterIP
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: redis-commander-ingress
+  namespace: devtools
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - hosts:
+    - redis.devtools.sorteamos.online
+    secretName: redis-commander-certs
+  rules:
+  - host: "redis.devtools.sorteamos.online"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: redis-commander-service
+            port:
+              number: 8081

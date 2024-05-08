@@ -1,0 +1,42 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+  - ../base/
+
+namespace: sorteamos-clientex
+
+configMapGenerator:
+  - name: sorteamos-config-map
+    behavior: merge
+    envs:
+      - vars.properties
+
+patches:
+  - target:
+      kind: Ingress
+      name: sorteamos-ingress
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: clientex.apps.sorteamos.online
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: clientex.apps.sorteamos.online
+  - target:
+      kind: Ingress
+      name: sorteamos-ws-ingress
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: ws.clientex.apps.sorteamos.online
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: ws.clientex.apps.sorteamos.online
+
+images:
+- name: registry.digitalocean.com/sorteamos/sorteamos
+  newTag: v0.2.69
+
+patchesStrategicMerge:
+- deployment.yaml

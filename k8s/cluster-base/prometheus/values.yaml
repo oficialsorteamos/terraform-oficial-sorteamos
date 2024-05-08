@@ -1,0 +1,66 @@
+grafana:
+  enabled: true
+  namespaceOverride: ""
+  persistence:
+    enabled: true
+    size: 5Gi
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://kube-prometheus-stack-prometheus.monitoring:9090/
+        access: proxy
+        isDefault: false
+      - name: Loki
+        type: loki
+        url: http://loki:3100
+        access: proxy
+        isDefault: true
+    
+  forceDeployDatasources: false
+  forceDeployDashboards: false
+  defaultDashboardsEnabled: true
+  defaultDashboardsTimezone: utc
+  adminPassword: DevSky2023@
+  rbac:
+    pspEnabled: false
+  ingress:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    enabled: true
+    hosts:
+    - grafana.apps.sorteamos.online
+    tls:
+    - hosts:
+      - grafana.apps.sorteamos.online
+      secretName: tls-grafana
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: "1"
+      annotations: {}
+      multicluster:
+        global:
+          enabled: false
+        etcd:
+          enabled: false
+      provider:
+        allowUiUpdates: false
+    datasources:
+      enabled: true
+      defaultDatasourceEnabled: true
+      uid: prometheus
+      annotations: {}
+      createPrometheusReplicasDatasources: false
+      label: grafana_datasource
+      labelValue: "1"
+      exemplarTraceIdDestinations: {}
+  extraConfigmapMounts: []
+  deleteDatasources: []
+  additionalDataSources: []
+  service:
+    portName: http-web

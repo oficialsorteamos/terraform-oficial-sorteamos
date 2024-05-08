@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sorteamos-inove
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:devskyteam/devsky-infra.git
+    targetRevision: HEAD
+    path: k8s/applications/sorteamos-inove
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sorteamos-inove
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

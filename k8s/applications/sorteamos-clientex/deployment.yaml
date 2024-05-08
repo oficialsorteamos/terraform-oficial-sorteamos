@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sorteamos
+  labels:
+    app: sorteamos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sorteamos
+  template:
+    metadata:
+      labels:
+        app: sorteamos
+    spec:
+      containers:
+        - name: sorteamos
+          image: registry.digitalocean.com/sorteamos/sorteamos:latest
+          resources:
+            limits:
+              cpu: 0.5
+              memory: "1228Mi"

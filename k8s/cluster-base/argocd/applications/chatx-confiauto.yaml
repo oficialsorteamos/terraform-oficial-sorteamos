@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sorteamos-confiauto
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:devskyteam/devsky-infra.git
+    targetRevision: HEAD
+    path: k8s/applications/sorteamos-confiauto
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sorteamos-confiauto
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
