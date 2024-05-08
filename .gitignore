@@ -1,0 +1,9 @@
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfvars
+infra.out
+.terraform/**
+.terraform.lock.hcl
+k8/applications/base/vars.properties
+k8/applications/sorteamos-clientex/vars.properties
+vars.tf
